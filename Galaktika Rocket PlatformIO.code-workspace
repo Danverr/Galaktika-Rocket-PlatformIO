@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "Galaktika Rocket PlatformIO",
+			"path": "."
+		}
+	],
+    "settings": {
+        "files.associations": {
+            "cmath": "cpp"
+        }
+    }
+}
