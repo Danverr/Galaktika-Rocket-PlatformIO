@@ -38,7 +38,7 @@ void SystemLogger::log(double val) {
     if (file) file.print(str);
     Serial.print(str);
 
-    long temp = long(val * RF_PRECISION);
+    long temp = constrain(long(val * RF_PRECISION), -32000, 32000);
     log((byte*)&temp, RF_VAR_SIZE);
 }
 
@@ -98,16 +98,16 @@ void SystemLogger::logInfo() {
         //  1: Идентификатор запроса                 
         //  2: Сам ответ
         for (int i = 0; i < RF_RESPONSE_SIZE; i++)
-            log(requestHandler.getResponse()[i]);
+            log(requestHandler->getResponse()[i]);
 
         log(currentStage); // 3: Стадия полета   
         log(height); // 4: Высота                                
         log(speedX); // 5: Скорость по Ox                        
         log(speedY); // 6: Скорость по Oy                        
         log(speedZ); // 7: Скорость по Oz                        
-        log(accX); // 8: Ускорение по Ox в G                      
-        log(accY); // 9: Ускорение по Oy в G                  
-        log(accZ); // 10: Ускорение по Oz в G                    
+        log(accY / 2048.0); // 9: Ускорение по Oy в G                  
+        log(accX / 2048.0); // 8: Ускорение по Ox в G                      
+        log(accZ / 2048.0); // 10: Ускорение по Oz в G                    
         log(coordX); // 11: Координата GPS по Ox                  
         log(coordY); // 12: Координата GPS по Oy                  
         log(coordZ); // 13: Координата GPS по Oz                  

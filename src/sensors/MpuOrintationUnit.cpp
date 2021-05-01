@@ -18,6 +18,7 @@ MpuOrintationUnit::MpuOrintationUnit(float axesRotation = 0, bool accelCorrectio
     // accelgyro.dmpInitialize();
     accelgyro.setXGyroOffset(50);
     accelgyro.setZGyroOffset(50);
+    accelgyro.setFullScaleAccelRange(MPU6050_ACCEL_FS_16);
     // Serial.println("Testing MPU6050 connections...");
     // Serial.println(accelgyro.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
 }

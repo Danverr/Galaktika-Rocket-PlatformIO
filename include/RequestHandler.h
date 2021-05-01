@@ -1,25 +1,25 @@
 #pragma once
 #include <Arduino.h>
+#include "config.h"
 
-#define RF_RESPONSE_SIZE 2
-#define RF_REQUEST_SIZE 3
-#define RF_MAX_RESPONSE_ID 120
-#define RF_ESCAPE_MARKER 0x7D
-#define RF_START_MARKER 0x12
-#define RF_VAR_SIZE 2
-#define RF_PRECISION 10
+class BlipSystem;
 
 class RequestHandler {
 
 public:
 
     RequestHandler();
+    RequestHandler(BlipSystem* system);
 
     void read(byte b);
 
     const byte* getResponse();
 
+    void setBlipSystem(BlipSystem* system) { this->system = system; }
+    BlipSystem* getBlipSystem() { return system; }
+
 private:
+    BlipSystem* system = nullptr;
 
     int currentByte = RF_REQUEST_SIZE;
     bool isEscaped = false;
@@ -29,4 +29,4 @@ private:
 
 };
 
-extern RequestHandler requestHandler;
+// extern RequestHandler requestHandler;

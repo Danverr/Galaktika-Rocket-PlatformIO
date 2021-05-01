@@ -2,6 +2,7 @@
 #define _SYSTEM_LOGGER_BLIP_H_
 
 #include <SD.h>
+#include "config.h"
 #include "RequestHandler.h"
 //#include "BlipSystem.h"
 
@@ -23,6 +24,7 @@ private:
     const char* fileName;
     unsigned long startTimer = 0, logDelta, logTimer = 0;
     FlightStages currentStage = WAITING_LAUNCH_STAGE;
+    RequestHandler* requestHandler;
 
     void begin(int time);
     void log(byte bytes[], int n);
@@ -42,6 +44,8 @@ public:
     void setStage(FlightStages stage);
 
     void finish();
+
+    void setRequestHandler(RequestHandler* requestHandler) { this->requestHandler = requestHandler; }
 };
 
 #endif

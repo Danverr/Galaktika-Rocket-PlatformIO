@@ -32,9 +32,10 @@
 
 MpuOrintationUnit* pImuUnit = new MpuOrintationUnit(AXIS_ROTATION, true);
 TrieEventManager* eventManager = new TrieEventManager();
-RequestHandler requestHandler;
 
 BlipSystem* pBlipSystem = new BlipSystem(pImuUnit, eventManager);
+
+RequestHandler requestHandler(pBlipSystem);
 
 SetupState* setupState = new SetupState(pBlipSystem, SAFE_SWITCH);
 WaitingStartState* waitingStartState = new WaitingStartState(pBlipSystem, true);
@@ -125,6 +126,7 @@ void setup() {
     Serial.println(">> postInit (ENGINE_LANDING_TEST_W/_MPU)");
     Serial.println((int)calculateActivationTime());
     pinMode(LAUNCH_SIGNAL_PIN, INPUT);
+    pBlipSystem->getSystemLogger()->setRequestHandler(&requestHandler);
 
     WaitingState* waitingFallState = new WaitingState(pBlipSystem, blip::toFunctional(&isFreeFall), blip::toFunctional(&waitFallInit));
     //WaitingState* waitingActivationState = new WaitingState(pBlipSystem, blip::toFunctional(&isActivationTime), blip::toFunctional(&freeFallInit));

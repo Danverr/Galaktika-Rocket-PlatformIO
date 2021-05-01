@@ -1,6 +1,11 @@
 #include "RequestHandler.h"
+#include "BlipSystem.h"
 
 RequestHandler::RequestHandler() : response({ 0, 0 }) {
+}
+
+RequestHandler::RequestHandler(BlipSystem* _system) : RequestHandler() {
+    system = _system;
 }
 
 void RequestHandler::read(byte b) {
@@ -16,6 +21,24 @@ void RequestHandler::read(byte b) {
         // Прочитали весь запрос
         if (currentByte == RF_REQUEST_SIZE && buff[0] != lastRequestId) {
             // Тут делаем, что попросили
+
+            
+            switch (buff[1]) {
+                case 1:
+                    switch (buff[2]) {
+                        case 0:
+                            Serial.println("PUUUUUUUUUUUUUUUUUU");
+                            bool inds10[] = {false, false, true};
+                            system->setIndication(inds10);
+                            break;
+                            
+                        case 1:
+                            bool inds11[] = {true, false, false};
+                            system->setIndication(inds11);
+                            break;
+                    }
+                    break;
+            }
             // ...
 
             // Формируем ответ
