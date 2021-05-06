@@ -50,7 +50,7 @@
 
 #define PARACHUTE_PIN_1 22
 #define PARACHUTE_PIN_2 23
-#define SD_CARD 0
+#define SD_CARD BUILTIN_SDCARD
 #define BUZZER 10
 #define SAFE_SWITCH 3
 #define LED_R 9
@@ -70,6 +70,7 @@ class String;
 class BlipSystem {
 private:
     // OrintationUnit* pImuUnit = new MpuOrintationUnit(AXIS_ROTATION, true);
+    TinyGPSPlus gps;
     OrintationUnit* pImuUnit;
     SystemLogger* pLogger = new SystemLogger(this, LOG_DELTA);
     BlipState* pState = BlipState::getBlipEmptyState();
@@ -161,6 +162,8 @@ public:
     double getAngularSpeedX() { return angularSpeedX; }
     double getAngularSpeedY() { return angularSpeedY; }
     double getAngularSpeedZ() { return angularSpeedZ; }
+
+    TinyGPSPlus& getGps() { return gps; };
 
     double getHeight() { return height; }
     double getZeroHeight() { return zeroHeight; }

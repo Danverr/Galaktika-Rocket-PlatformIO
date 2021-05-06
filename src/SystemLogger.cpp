@@ -23,9 +23,6 @@ void SystemLogger::log(long val) {
     String str = ',' + (String)val;    
     if (file) file.print(str);
     Serial.print(str);
-
-    val = max(val, -32000);
-    val = min(val,  32000);
     log((byte*)&val, RF_VAR_SIZE);
 }
 
@@ -33,13 +30,15 @@ void SystemLogger::log(int val) {
     log(long(val));
 }
 
-void SystemLogger::log(double val) {
-    String str = ',' + (String)val;
+void SystemLogger::log(float val) {
+    String str = ',' + (String)val;    
     if (file) file.print(str);
     Serial.print(str);
+    log((byte*)&val, RF_VAR_SIZE);
+}
 
-    long temp = constrain(long(val * RF_PRECISION), -32000, 32000);
-    log((byte*)&temp, RF_VAR_SIZE);
+void SystemLogger::log(double val) {
+    log(float(val));
 }
 
 SystemLogger::SystemLogger(BlipSystem* pBS, unsigned long _logDelta = 50, char* _fileName = "data.txt")
@@ -49,20 +48,14 @@ SystemLogger::SystemLogger(BlipSystem* pBS, unsigned long _logDelta = 50, char* 
 bool SystemLogger::start() {   
     if (SD.begin(SD_CARD)) {
         file = SD.open("data.txt", FILE_WRITE);
-        if (file) {
-            file.println("\n\n\n>>>BLIP LOGGING SYSTEM<<<");
-            file.print("-LOG NAME: '");
-            //file.print(fileName);
-            file.println("'-\n");
-            file.println("-# Time(s), Altitude(m), Velocity(m/s), Angles[x, y, z](grades), Servo[x, z](grades), State(id),,");
-        } else {
+        if (!file) {
             Serial.println("ERROR: SD-CARD CAN'T OPEN FILE");
         }
         startTimer = millis();
         return file;
     }
-    Serial.println("ERROR: SD-CARD ISN'T OPEN");
-    
+
+    Serial.println("ERROR: SD-CARD ISN'T OPEN");    
     return false;
 }
 
@@ -73,7 +66,6 @@ void SystemLogger::logInfo() {
         int time = (millis() - startTimer);
         String state = pBlipSystem->getState()->getId();
         double height = pBlipSystem->getHeight();
-        double zeroHeight = pBlipSystem->getZeroHeight();
         double gyroX = pBlipSystem->getGyroX(); // X = Pitch
         double gyroY = pBlipSystem->getGyroY(); // Y = Yaw
         double gyroZ = pBlipSystem->getGyroZ(); // Z = Roll
@@ -83,12 +75,10 @@ void SystemLogger::logInfo() {
         long accX = pBlipSystem->getAccX();
         long accY = pBlipSystem->getAccY();
         long accZ = pBlipSystem->getAccZ();
-        double coordX = 0;
-        double coordY = 0;
-        double coordZ = 0;
-        double speedX = 0;
-        double speedY = 0;
-        double speedZ = 0;
+        double coordX = pBlipSystem->getGps().location.lat();
+        double coordY = pBlipSystem->getGps().location.lng();
+        double coordZ = pBlipSystem->getGps().altitude.meters(); 
+        double speed = pBlipSystem->getGps().speed.mps();
         int servoX = pBlipSystem->getServoXPointer()->read();
         int servoY = pBlipSystem->getServoZPointer()->read();
 
@@ -102,23 +92,21 @@ void SystemLogger::logInfo() {
 
         log(currentStage); // 3: Стадия полета   
         log(height); // 4: Высота                                
-        log(speedX); // 5: Скорость по Ox                        
-        log(speedY); // 6: Скорость по Oy                        
-        log(speedZ); // 7: Скорость по Oz                        
-        log(accY / 2048.0); // 9: Ускорение по Oy в G                  
-        log(accX / 2048.0); // 8: Ускорение по Ox в G                      
-        log(accZ / 2048.0); // 10: Ускорение по Oz в G                    
-        log(coordX); // 11: Координата GPS по Ox                  
-        log(coordY); // 12: Координата GPS по Oy                  
-        log(coordZ); // 13: Координата GPS по Oz                  
-        log(gyroZ); // 14: Yaw (Рыскание) в градусах                   
-        log(gyroX); // 15: Pitch (Тангаж) в градусах                     
-        log(gyroY); // 16: Roll (Крен) в градусах                       
-        log(angularSpeedZ); // 17: Скорость рыскания в градусах в секунду
-        log(angularSpeedX); // 18: Скорость тангажа в градусах в секунду 
-        log(angularSpeedY); // 19: Скорость крена в градусах в секунду   
-        log(servoX); // 20: Координата X серво
-        log(servoY); // 21: Координата Y серво        
+        log(speed); // 5: Скорость в м/с                   
+        log(accY / 2048.0); // 6: Ускорение по Oy в G                  
+        log(accX / 2048.0); // 7: Ускорение по Ox в G                      
+        log(accZ / 2048.0); // 8: Ускорение по Oz в G                            
+        log(coordX); // 9: Координата GPS по Ox                  
+        log(coordY); // 10: Координата GPS по Oy                  
+        log(coordZ); // 11: Координата GPS по Oz                          
+        log(gyroZ); // 12: Yaw (Рыскание) в градусах                   
+        log(gyroX); // 13: Pitch (Тангаж) в градусах             
+        log(gyroY); // 14: Roll (Крен) в градусах                       
+        log(angularSpeedZ); // 15: Скорость рыскания в градусах в секунду
+        log(angularSpeedX); // 16: Скорость тангажа в градусах в секунду 
+        log(angularSpeedY); // 17: Скорость крена в градусах в секунду   
+        log(servoX); // 18: Координата X серво
+        log(servoY); // 19: Координата Y серво        
 
         // Вывод в Serial порт по проводу
         /*
@@ -139,7 +127,7 @@ void SystemLogger::logInfo() {
 
 void SystemLogger::logEvent(String eventName) {
     if (file) {
-        String msg = "# LOG TIME: " + (String)(millis() - startTimer) +  ", EVENT: " + eventName;
+        String msg = "\n# LOG TIME: " + (String)(millis() - startTimer) +  ", EVENT: " + eventName;
         file.println(msg);
     }
 }

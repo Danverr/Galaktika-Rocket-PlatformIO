@@ -120,6 +120,7 @@ bool nextStateFlag = false;
 void setup() {
     Serial.begin(9600);
     Serial3.begin(115200);
+    Serial6.begin(9600);
 
     Serial.println(">> preInit");
     pBlipSystem->init();
@@ -179,6 +180,9 @@ void serialEvent() {
 }
 
 void serialEvent3() {
-    byte b = Serial3.read();
-    requestHandler.read(b);    
+    requestHandler.read(Serial3.read());
+}
+
+void serialEvent6(){
+    pBlipSystem->getGps().encode(Serial6.read());
 }

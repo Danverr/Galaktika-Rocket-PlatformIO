@@ -73,16 +73,21 @@ void MpuOrintationUnit::getMetrics6(double* pAngleX, double* pAngleY, double* pA
     *pAngleZ = (kalAngleX) * sin(axesRotation * DEG_TO_RAD) +
                (kalAngleZ) * cos(axesRotation * DEG_TO_RAD) - offsetZ;
     */
+
+    angularSpeedX = (double)rawGyroX / 32768.0 * 250.0;
+    angularSpeedY = (double)rawGyroY / 32768.0 * 250.0;
+    angularSpeedZ = (double)rawGyroZ / 32768.0 * 250.0;
+
     *pAccX = accX;
     *pAccY = accY;
     *pAccZ = accZ;
     // The accelerometer's maximum samples rate is 1kHz
 }
 
-void MpuOrintationUnit::getAngularSpeed(double& angularSpeedX, double& angularSpeedY, double& angularSpeedZ) {
-    gyroXrate = angularSpeedX;
-    gyroYrate = angularSpeedY;
-    gyroZrate = angularSpeedZ;
+void MpuOrintationUnit::getAngularSpeed(double& _angularSpeedX, double& _angularSpeedY, double& _angularSpeedZ) {
+    _angularSpeedX = angularSpeedX;
+    _angularSpeedY = angularSpeedY;
+    _angularSpeedZ = angularSpeedZ;
 }
 
 void MpuOrintationUnit::resetAngles() {

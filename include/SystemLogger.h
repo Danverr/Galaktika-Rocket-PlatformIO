@@ -30,6 +30,7 @@ private:
     void log(byte bytes[], int n);
     void log(long val);
     void log(int val);
+    void log(float val);
     void log(double val);
 
 public:

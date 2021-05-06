@@ -24,7 +24,7 @@ void WaitingStartState::init() {
 
 void WaitingStartState::execute() {
     bool bmpCondition = useBmp && pBlipSystem->getHeight() - zeroHeight >= 1;
-    bool accCondition = !useBmp && pBlipSystem->getAccY() <= -25000;
+    bool accCondition = !useBmp && pBlipSystem->getAccY() <= -12500;
     if (bmpCondition || accCondition) {
         // pBlipSystem->setState(MIDDLE_AIR);
         bool cls[3] = { false, false, true };

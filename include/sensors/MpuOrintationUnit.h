@@ -40,6 +40,9 @@ private:
     double gyroXrate = 0;
     double gyroYrate = 0;
     double gyroZrate = 0;
+    double angularSpeedX = 0;
+    double angularSpeedY = 0;
+    double angularSpeedZ = 0;
     
     unsigned long timer;
     MPU6050 accelgyro;
