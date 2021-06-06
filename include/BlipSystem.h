@@ -24,6 +24,7 @@
 #include "SystemLogger.h"
 #include "./sensors/OrintationUnit.h"
 #include "./sensors/MpuOrintationUnit.h"
+#include "./sensors/Mpu9250OrintationUnit.h"
 #include "IEventManager.h"
 
 //State codes

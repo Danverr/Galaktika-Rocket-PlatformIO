@@ -30,7 +30,7 @@
 
 #define LAUNCH_SIGNAL_PIN 14
 
-MpuOrintationUnit* pImuUnit = new MpuOrintationUnit(AXIS_ROTATION, true);
+Mpu9250OrintationUnit* pImuUnit = new Mpu9250OrintationUnit(AXIS_ROTATION, true);
 TrieEventManager* eventManager = new TrieEventManager();
 
 BlipSystem* pBlipSystem = new BlipSystem(pImuUnit, eventManager);
@@ -152,7 +152,9 @@ void setup() {
     thrusterState->setNextState(landingState);
     landingState->setNextState(saveState);
 
-    pImuUnit->useRawGyroCorrection(pBlipSystem, "SetupState", "SetupState");
+    // pImuUnit->useRawGyroCorrection(pBlipSystem, "SetupState", "SetupState");
+
+    requestHandler.setCalibrationState(setupState);
 
     pBlipSystem->changeState(setupState);
 }

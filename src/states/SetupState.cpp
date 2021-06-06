@@ -17,7 +17,7 @@ void SetupState::execute() {
             setupState = 1;
             setupTimer = millis();
             bool cls[3] = { false, true, true };
-            pBlipSystem->setIndication(200, 2000, cls, 2000);
+            // pBlipSystem->setIndication(200, 2000, cls, 2000);
             Serial.println("SH: switch->" + (String)setupState);
         }
         break;

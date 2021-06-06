@@ -1,7 +1,11 @@
 #include "RequestHandler.h"
 #include "BlipSystem.h"
+#include "BlipState.h"
 
 RequestHandler::RequestHandler() : response({ 0, 0 }) {
+    calibrationState = BlipState::getBlipEmptyState();
+    launchState = BlipState::getBlipEmptyState();
+    emergencyParachuteState = BlipState::getBlipEmptyState();
 }
 
 RequestHandler::RequestHandler(BlipSystem* _system) : RequestHandler() {
@@ -21,25 +25,34 @@ void RequestHandler::read(byte b) {
         // Прочитали весь запрос
         if (currentByte == RF_REQUEST_SIZE && buff[0] != lastRequestId) {
             // Тут делаем, что попросили
-
-            
             switch (buff[1]) {
-                case 1:
-                    switch (buff[2]) {
-                        case 0:
-                            Serial.println("PUUUUUUUUUUUUUUUUUU");
-                            bool inds10[] = {false, false, true};
-                            system->setIndication(inds10);
-                            break;
-                            
-                        case 1:
-                            bool inds11[] = {true, false, false};
-                            system->setIndication(inds11);
-                            break;
-                    }
+            case 1:
+                switch (buff[2]) {
+                case 0:
+                    bool inds10[] = { false, false, true };
+                    system->setIndication(inds10);
                     break;
+
+                case 1:
+                    bool inds11[] = { true, false, false };
+                    system->setIndication(inds11);
+                    break;
+                }
+                break;
+
+            case RH_CALIBRATION_CODE:
+                system->changeState(calibrationState);
+
+                break;
+
+            case RH_LAUNCH_CODE:
+                system->changeState(launchState);
+                break;
+
+            case RH_EMERGENCY_PARACHUTE_CODE:
+                system->changeState(emergencyParachuteState);
+                break;
             }
-            // ...
 
             // Формируем ответ
             lastRequestId = buff[0];
