@@ -8,7 +8,9 @@
     "settings": {
         "files.associations": {
             "cmath": "cpp",
-            "cstdlib": "cpp"
+            "cstdlib": "cpp",
+            "vector": "cpp",
+            "*.tcc": "cpp"
         }
     }
 }
